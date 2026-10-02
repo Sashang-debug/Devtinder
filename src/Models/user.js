@@ -64,6 +64,18 @@ const userSchema = new mongoose.Schema({
     }
 },{timestamps:true})
 
+userSchema.methods.getJWT=async function(){//These are schema methods which can be called on the instance of the model.
+    const user = this;
+    const token = await jwt.sign({id:user._id},"DEV@Tinder790",{expiresIn:"7d"});
+    return token;
+}
+
+userSchema.methods.validatePassword=async function(password){//avoid using arrow function here.
+    const user = this;
+    const ispasswordMatch = await bcrypt.compare(password,user.password);//Dont interchage the order of parameters.
+    return ispasswordMatch;
+}
+
 const User = mongoose.model("User",userSchema);
 
 module.exports = User;
