@@ -13,4 +13,20 @@ const validateSignUpData = (req) =>{
     }
 };
 
-module.exports = {validateSignUpData};
+const validtaeUpadteProfileData = (req) =>{
+       const allowedFields = ["firstName","lastName","emailId","about","gender","photourl","age","skills"];
+       const isAllowed = Object.keys(req.body).every(field => allowedFields.includes(field));
+       return isAllowed;
+}
+
+const validatePasswordUpdateData = (req) =>{
+  try{
+    const password = req.body.oldPassword;
+    const logineduser = req.user;
+    const validtaePassword = logineduser.validatePassword(password);
+    return validtaePassword;
+  } catch (err) {
+    throw new Error("Error occurred while validating password.");
+  }
+}
+module.exports = {validateSignUpData,validtaeUpadteProfileData,validatePasswordUpdateData};

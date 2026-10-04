@@ -43,6 +43,15 @@ router.post("/login",async(req,res)=>{
     }
 })
 
-
+router.post("/logout",async(req,res)=>{
+    //cleanup activites
+    try{
+       res.cookie("token","",{expires:new Date(Date.now())});
+       res.send("Logout Succesfully.");
+    }catch(err){
+        console.log("Error: ",err);
+        res.status(500).send("Something went wrong!");
+    }
+})
 
 module.exports = router;
