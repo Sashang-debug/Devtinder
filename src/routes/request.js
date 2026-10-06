@@ -39,5 +39,31 @@ requestrouter.post("/request/send/:status/:toUserId",userauth,async(req,res)=>{
      }
 })
 
+requestrouter.post("/request/received/:status/:requestId",userauth,async(req,res)=>{
+    try{
+        const loggedInUser = req.user;
+        const {status,requestId} = req.params;
+        const allowedStatuses = ["accepted","rejected"];
+        if(!allowedStatuses.includes(status)){
+            return res.status(400).json({message:"Invalid status. Status must be either accepted or rejected."})
+        }
+        const request = await connectionRequestModel.findOne({
+            _id:requestId,
+            toUserId:loggedInUser.id,
+            status: "interested"
+        });
+        if(!request){
+            return res.status(404).json({message:"Request not found or already processed."})
+        }
+        request.status = status;
+        const updatedRequest = await request.save();
+        const fromUser = await User.findById(request.fromUserId);
+        res.json({message:`${loggedInUser.firstName} ${status} ${fromUser.firstName}.`,updatedRequest})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+})
+
+
 
 module.exports = requestrouter;
